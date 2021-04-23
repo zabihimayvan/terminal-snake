@@ -5,6 +5,11 @@
     when the list is not empty, run an extra eraser on those tails
  */
 
+/* Keypad control stuff comes from Chase's code
+    I just modified it for how I was keeping track of direction
+ * inMotion and the game over message were also from Chase's code.
+ */
+
 #include <stdio.h>
 #include <curses.h>
 #include <unistd.h>
@@ -40,10 +45,7 @@ int main(){
             //Prints " " over the previous printing to erase.
             mvprintw(yprev,xprev,eraser);
         }
-
-        /*I'm not sure how to get user input without interrupting the snake
-         * so this part is commented out for now
-         */        
+      
         int ch;
         //ch = getch();
 
