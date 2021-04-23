@@ -1,63 +1,137 @@
-//Draw border of snake pit and initialize snake size 5 moving right
-
-/* Can only move in x direction for now,
- * isn't controlled by user input yet
+/* Isn't controlled by user input yet,
+    need to figure out how to get user input without interrupting program
+ * Also, doesn't erase the snake tails after changing direction
+    We could keep track of tails that need to be erased in a list,
+    when the list is not empty, run an extra eraser on those tails
  */
 
 #include <stdio.h>
 #include <curses.h>
 #include <unistd.h>
+#include <string.h>
+#include <stdlib.h>
 
 #define DELAY 60000 //Controls speed of snake
 
-void draw();
+void draw(); //Initialize screen and draw snake pit border
 
 int main(){
 
     draw();
 
-    //Create the snake and automatically move it
-    /* So far, only works in x-axis and
-     * doesn't accept any user-input to change direction yet
-     */
+    int inMotion = 1;
+    char dead[] = "GAME OVER";
+    char exitMessage[] = "Press any key to exit.";
 
-    int x=1, y=1;
-    int xprev=1, yprev=1;
-    int xmax = COLS-1, ymax = LINES-1;
-    int xnext = 0;
-    int xdir = 1, ydir = 1;
+    int x=1, y=1; //Snake head position
+    int xprev=1, yprev=1; //Control for snake eraser
+    int xmax = COLS-1, ymax = LINES-1; //Boundaries of pit
+    int xdir = 1, ydir = 1, toggle = 1; //Controls direction
 
-    char snake[] = "ooooo";
+    char snake[] = "o";
     int snakeSize = 5;
     char eraser[] = " ";
 
-    while(1) {
-        mvprintw(yprev,xprev,eraser);
-        /* Code from class powerpoints clears the screen here but
-         * that will also clear the border of the snake pit,
-         * so instead this prints " " over the previous printing to erase.
-         * Must keep track of previous coordinates (xprev and yprev)
-         * and adjust if snake changes direction.
-         */
-        mvprintw(y,x,snake);
-        
-        refresh();
-        usleep(DELAY);
+    //Count variable is just for testing
+    int count = 0;
 
-        xnext = x + xdir;
-
-        if ((xnext > (xmax - snakeSize)) || (xnext < 1)){
-            xdir *= -1;
+    while(inMotion == 1) {
+        if ((xprev >= 1) && (xprev < xmax) && (yprev >= 1) && (yprev < ymax)) {
+            //Prints " " over the previous printing to erase.
+            mvprintw(yprev,xprev,eraser);
         }
-        else {
-            if (xdir > 0)
-                xprev = x;
-            else {
-                xprev = x + snakeSize -1;
+
+        /*I'm not sure how to get user input without interrupting the snake
+         * so this part is commented out for now
+         */        
+        int ch;
+        //ch = getch();
+
+        if (ch == KEY_UP) {
+            if ((toggle == -1) && (ydir == 1)) {
+                //Lose game if direction reverses
+                inMotion = 0;
             }
-            x += xdir;
+            toggle = -1;
+            ydir = -1;
+            xprev = x;
+        }
+        else if (ch == KEY_DOWN) {
+            if ((toggle == -1) && (ydir == -1)) 
+                inMotion = 0;
+            toggle = -1;
+            ydir = 1;
+            xprev = x;
+        }
+        else if (ch == KEY_LEFT) {
+            if ((toggle == 1) && (xdir == 1)) 
+                inMotion = 0;
+            toggle = 1;
+            xdir = -1;
+            yprev = y;
+        }
+        else if (ch == KEY_RIGHT) {
+            if ((toggle == 1) && (xdir == -1)) 
+                inMotion = 0;
+            toggle = 1;
+            xdir = 1;
+            yprev = y;
+        }
+        
+        //These "if (count)" statements are test cases for movement
+        //Delete when we figure out user input
+        count++;
+        if (count == 20) {
+            ch = KEY_DOWN;          
+        }
+        if (count == 30) {
+            ch = KEY_LEFT;
+        }
+        if (count == 40) {
+            ch = KEY_DOWN;
+        }
+
+        if (toggle > 0) {
+            mvprintw(y,x,snake);
+        
+            refresh();
+            usleep(DELAY);
+
+            if ((x >= xmax) || (x < 1)){
+                inMotion = 0;
+            }
+            else {
+                if (xdir > 0)
+                    xprev = x - snakeSize + 1;
+                else {
+                    xprev = x + snakeSize - 1;
+                }
+                x += xdir;
+            }
+        }
+
+        else {
+            mvprintw(y,x,snake);
+            refresh();
+            usleep(DELAY);
+
+            if((y >= ymax) || (y < 1)) {
+                inMotion = 0;
+            }
+            else {
+                if (ydir > 0)
+                    yprev = y - snakeSize + 1;
+                else {
+                    yprev = y + snakeSize - 1;
+                }
+                y += ydir;
+            }
         }
     }
+
+    mvprintw((ymax/2)-1, xmax/2, dead);
+    mvprintw(ymax/2,(xmax/2)-6,exitMessage);
+    getch();
 
     endwin();
 
@@ -65,6 +139,8 @@ int main(){
 }
 
 void draw() {
+    //Initialize screen
+    keypad(stdscr,TRUE);
     initscr();
     clear();
     noecho();
