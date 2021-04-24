@@ -101,17 +101,24 @@ int main(int argc, char *argv[]) {
     while(inMotion) {
         
         //handle user input
-            int ch;
-            ch = getch();
+            int ch = getch();
             /*only allow 90 degree changes in direction, no reversing*/
-            //TODO: end game if user tries to reverse
-            if((ch == KEY_RIGHT) && (currentDir != 'R' && currentDir != 'L')) {
-                currentDir = 'R';
-            } else if ((ch == KEY_LEFT) && (currentDir != 'R' && currentDir != 'L')) {
+            if(ch == KEY_RIGHT){
+                if (currentDir == 'L')
+                    inMotion = 0;
+                else
+                    currentDir = 'R';
+            } else if (ch == KEY_LEFT) {
+                if (currentDir == 'R')
+                    inMotion = 0;
                 currentDir = 'L';
-            } else if((ch == KEY_DOWN) && (currentDir != 'U' && currentDir != 'D')) {
+            } else if(ch == KEY_DOWN) {
+                if (currentDir == 'U')
+                    inMotion = 0;
                 currentDir = 'D';
-            } else if((ch == KEY_UP) && (currentDir != 'U' && currentDir != 'D')) {
+            } else if(ch == KEY_UP) {
+                if (currentDir == 'D')
+                    inMotion = 0;
                 currentDir = 'U';
             }
 
