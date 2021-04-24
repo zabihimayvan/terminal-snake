@@ -84,12 +84,25 @@ void clearScreen(){
     }
 }
 
+void exitGame() {
+    mvprintw((maxY/2)-1, maxX/2, "GAME OVER");
+    mvprintw(maxY/2,(maxX/2)-6, "Start a new game? [Y/N]");
+    refresh();
+    int a = getch();
+    if ((a=='Y') || (a=='y')) {
+        startGame();
+    }
+    else {
+        endwin();
+    }
+}
+
 void draw() {
     clearScreen(); //Clear all but the border
 
     //Print dead in the center of the screen if inMotion == 0
     if(!inMotion)
-        mvprintw(maxY / 2, maxX / 2, "Dead");
+        exitGame();
 
     //Draw the snake
     for(int i = 0; i < snakeLength; i++) {
@@ -161,8 +174,5 @@ int main(int argc, char *argv[]) {
             //draw screen, snake
             draw();
         }
-
-    endwin(); 
-
 
 }
