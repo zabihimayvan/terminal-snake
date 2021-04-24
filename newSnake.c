@@ -38,28 +38,7 @@ void startGame() {
     //begin with snake moving right
     currentDir = 'R';
     inMotion = 1;
-
-    clear(); 
     
-    //Snake starts with length of 5
-    int j = 0;
-    for(int i = snakeLength; i >= 0; i--) {
-        coordPair currentPoint;
-        
-        //snake starts on left edge, vertically centered
-        currentPoint.xCoord = i;
-        currentPoint.yCoord = maxY / 2; 
-
-        snakeBody[j] = currentPoint;
-        j++;
-    }
-
-    refresh();
-}
-
-
-void draw() {
-
     clear(); 
     char message[] = "*";
         move(0,0);
@@ -76,6 +55,37 @@ void draw() {
             move(i,COLS-1);
             addstr(message);
         }
+
+    //Snake starts with length of 5
+    int j = 0;
+    for(int i = snakeLength; i >= 0; i--) {
+        coordPair currentPoint;
+        
+        //snake starts on left edge, vertically centered
+        currentPoint.xCoord = i;
+        currentPoint.yCoord = maxY / 2; 
+
+        snakeBody[j] = currentPoint;
+        j++;
+    }
+
+    refresh();
+}
+
+void clearScreen(){
+    //Print over everything except the border
+    char message[] = " ";
+    move(1,1);
+    for (int i=1; i<LINES-2; i++) {
+        for (int j=1; j<COLS-1; j++) {
+            move(i,j);
+            addstr(message);
+        }
+    }
+}
+
+void draw() {
+    clearScreen(); //Clear all but the border
 
     //Print dead in the center of the screen if inMotion == 0
     if(!inMotion)
