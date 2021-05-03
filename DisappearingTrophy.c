@@ -11,7 +11,7 @@
 int DELAY = 70000; // Set default speed of snake
 int maxY, maxX;
 int nextX, nextY; 
-int snakeLength = 3, inMotion = 1;
+int snakeLength = 5, inMotion = 1;
 int randTimer, randValue, randX, randY;
 int highScore = 0;
 char currentDir;
@@ -46,7 +46,7 @@ void startGame() {
     maxX = getmaxx(stdscr);
     maxY = getmaxy(stdscr); 
     startTimer();
-    snakeLength = 3;
+    snakeLength = 5;
 
     //begin with snake moving right
     currentDir = 'R';
@@ -69,7 +69,7 @@ void startGame() {
             addstr(message);
         }
 
-    //Snake starts with length of 3
+    //Snake starts with length of 5
     int j = 0;
     for(int i = snakeLength; i >= 0; i--) {
         coordPair currentPoint;
