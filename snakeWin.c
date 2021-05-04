@@ -11,7 +11,7 @@
 int DELAY = 70000; // Set default speed of snake
 int maxY, maxX;
 int nextX, nextY; 
-int snakeLength = 3, inMotion = 1;
+int snakeLength = 5, inMotion = 1;
 int randTimer, randValue, randX, randY;
 int highScore = 0;
 char currentDir;
@@ -24,21 +24,22 @@ static void countdown(int);
 static int set_ticker( int n_msecs );
 static int trophy_gen_in_progress = 0;
 
-/* a coordPair will contain an xCoord and a yCoord, which will represent the coordinates
+//Author: Kenneth
+/* A coordPair will contain an xCoord and a yCoord, which will represent the coordinates
 of the snake's body */
 typedef struct coordPair {
     int xCoord;
     int yCoord;
 } coordPair;
 
-/* creates the snake as an array of coordinate pairs */ 
+//Creates the snake as an array of coordinate pairs
 coordPair snakeBody[255] = {};
 coordPair trophy;
 
-//function to start the game
+//Function to start the game
 void startGame() {
 
-    //create screen
+    //Initialize screen
     initscr(); 
     noecho(); 
     keypad(stdscr, TRUE);
@@ -47,37 +48,40 @@ void startGame() {
     maxX = getmaxx(stdscr);
     maxY = getmaxy(stdscr); 
     startTimer();
-    snakeLength = 3;
+    snakeLength = 5;
     DELAY = 70000;
 
-    //begin with snake moving right
+    //Begin with snake moving random direction
     startDir();
     inMotion = 1;
     
+    //Author: Maryanne
+    //Print snake pit border
     clear(); 
     char message[] = "*";
-        move(0,0);
-        for (int i=0; i<COLS; i++)
-            addstr(message);
-        for (int i=1; i<LINES-1; i++) {
-            move(i,0);
-            addstr(message);
-        }
-        move(LINES-1,0);
-        for (int i=0; i<COLS; i++)
-            addstr(message);
-        for (int i=1; i<LINES-1; i++) {
-            move(i,COLS-1);
-            addstr(message);
-        }
+    move(0,0);
+    for (int i=0; i<COLS; i++)
+        addstr(message);
+    for (int i=1; i<LINES-1; i++) {
+        move(i,0);
+        addstr(message);
+    }
+    move(LINES-1,0);
+    for (int i=0; i<COLS; i++)
+        addstr(message);
+    for (int i=1; i<LINES-1; i++) {
+        move(i,COLS-1);
+        addstr(message);
+    }
 
-    //Snake starts with length of 3
+    //Author: Kenneth/Maryanne
+    //Initialize snake. Starts with length of 5
     int j = 0;
     for(int i = snakeLength; i >= 0; i--) {
         coordPair currentPoint;
         
-        //snake starts on left edge, vertically centered
-        currentPoint.xCoord = i;
+        //Snake starts in middle of screen
+        currentPoint.xCoord = maxX / 2;
         currentPoint.yCoord = maxY / 2; 
 
         snakeBody[j] = currentPoint;
@@ -90,8 +94,9 @@ void startGame() {
     refresh();
 }
 
+//Author: Maryanne
+//Clear/print over everything except the border
 void clearScreen(){
-    //Print over everything except the border
     char message[] = " ";
     move(1,1);
     for (int i=1; i<LINES-1; i++) {
@@ -102,7 +107,10 @@ void clearScreen(){
     }
 }
 
+//Author: Maryanne/Kenneth/Chase
+//When game ends, display high score and allow user to start a new game
 void exitGame() {
+    //Adjust high score
     if (highScore < snakeLength)
         highScore = snakeLength;
 
@@ -124,16 +132,19 @@ void exitGame() {
     }
 }
 
+//Print message if user lost
 void loseGame() {
     mvprintw((maxY/2)-1, maxX/2, "GAME OVER");
     exitGame();
 }
 
+//Print message if user won
 void winGame() {
     mvprintw((maxY/2)-1, maxX/2, "YOU WIN!");
     exitGame();
 }
 
+//Determine random direction for game to start in
 void startDir() {
     srand(time(NULL));
     int randDir = (rand() % 4);
@@ -149,6 +160,7 @@ void startDir() {
 }
 
 //Author: Chase
+//Create new trophy
 void newTrophy() {
     srand(time(NULL));
     randValue = (rand() % 9) + 1;
@@ -160,20 +172,25 @@ void newTrophy() {
 }
 
 //Author: Chase/Derek
+//Print trophy on screen
 void addTrophy() {
-    if (trophy_gen_in_progress) return;
+    if (trophy_gen_in_progress)
+        return;
     trophy_gen_in_progress = 1;
     mvprintw(trophy.yCoord, trophy.xCoord, "%d", randValue);
     trophy_gen_in_progress = 0;
 }
 
 //Author: Chase/Derek
+//Clear/print over expired trophy
 void clearTrophy() {
     trophy_gen_in_progress = 1;
     mvprintw(trophy.yCoord, trophy.xCoord, " ");
     trophy_gen_in_progress = 0;
 }
 
+//Start timer for trophy, will expire after a random interval
+//We chose 11-19 second trophy expiry to make the game more user-friendly
 void startTimer() {
     int trophy_interval;
     trophy_interval = (rand() % (9+1-1)) + 1;    // Generate a digit randomly chosen from 1 to 9
@@ -181,7 +198,9 @@ void startTimer() {
 }
 
 //Author: Chase/Derek
+//When snake eats a trophy, grow snake and adjust speed
 void growSnake() {
+    //Grow snake
     int old_snakeLength = snakeLength;
     snakeLength += randValue;
     for (int i = snakeLength - 1; i > old_snakeLength - 1; i--)
@@ -189,13 +208,14 @@ void growSnake() {
         snakeBody[i].xCoord = snakeBody[old_snakeLength -1].xCoord;
         snakeBody[i].yCoord = snakeBody[old_snakeLength -1].yCoord;
     }
-    //increases speed propotional to length
+    //Increase speed proportional to length
     DELAY = DELAY - (randValue * 300);
     if (DELAY < 5000)
         DELAY = 5000;
 }
 
 //Author: Chase
+//Check if snake collides with itself (if head overlaps with coordinates in array)
 bool snakeColliding() {
     int x = snakeBody[0].xCoord;
     int y = snakeBody[0].yCoord;
@@ -210,6 +230,7 @@ bool snakeColliding() {
 }
 
 //Author: Chase
+//Check if head of snake collides with border
 bool wallColliding() {
     int x = snakeBody[0].xCoord;
     int y = snakeBody[0].yCoord;
@@ -220,22 +241,23 @@ bool wallColliding() {
     return false;
 }
 
+//Draw snake and control speed
 void draw() {
-    clearScreen(); //Clear all but the border
+    //Clear all but the border
+    clearScreen();
 
-    //Print dead in the center of the screen if inMotion == 0
+    //Check if user lost and go to loseGame() function
     if(!inMotion)
         loseGame();
 
-    //Draw the snake
+    //Draw the snake and trophy
     for(int i = 0; i < snakeLength; i++) {
         mvprintw(snakeBody[i].yCoord, snakeBody[i].xCoord, "o");
     }
-
     addTrophy();
     refresh();
 
-    //controls snake speed
+    //Control snake speed
     usleep(DELAY); 
 }
 
@@ -244,9 +266,6 @@ void countdown(int signum)
     if (!trophy_gen_in_progress)
     {
         clearTrophy();
-    }
-    if (!trophy_gen_in_progress)
-    {
         newTrophy();
         addTrophy();
     }
@@ -261,16 +280,16 @@ void countdown(int signum)
 */
 int set_ticker( int n_msecs )
 {
-        struct itimerval new_timeset;
-        long    n_sec, n_usecs;
+    struct itimerval new_timeset;
+    long    n_sec, n_usecs;
 
-        n_sec = n_msecs / 1000 ;		/* int part	*/
-        n_usecs = ( n_msecs % 1000 ) * 1000L ;	/* remainder	*/
+    n_sec = n_msecs / 1000 ;		/* int part	*/
+    n_usecs = ( n_msecs % 1000 ) * 1000L ;	/* remainder	*/
 
-        new_timeset.it_interval.tv_sec  = n_sec;        /* set reload       */
-        new_timeset.it_interval.tv_usec = n_usecs;      /* new ticker value */
-        new_timeset.it_value.tv_sec     = n_sec  ;      /* store this       */
-        new_timeset.it_value.tv_usec    = n_usecs ;     /* and this         */
+    new_timeset.it_interval.tv_sec  = n_sec;        /* set reload       */
+    new_timeset.it_interval.tv_usec = n_usecs;      /* new ticker value */
+    new_timeset.it_value.tv_sec     = n_sec  ;      /* store this       */
+    new_timeset.it_value.tv_usec    = n_usecs ;     /* and this         */
 
 	return setitimer(ITIMER_REAL, &new_timeset, NULL);
 }
@@ -278,50 +297,63 @@ int set_ticker( int n_msecs )
 /* Main */
 int main(int argc, char *argv[]) {
 
-    //initialize screen and starting values
+    //Initialize screen and starting values
     startGame();
 
     signal(SIGALRM, countdown);
 
     while(inMotion) {
         
-        //handle user input
+        //Author: Maryanne/Kenneth
+        //Handle user input to change direction
         int ch = getch();
-        /*only allow 90 degree changes in direction, no reversing*/
+        //Only allow 90 degree changes in direction, no reversing
+        //Speed stays approximately the same whether moving vertical or horizontal
         if(ch == KEY_RIGHT){
             if (currentDir == 'L')
                 inMotion = 0;
-            else
-                currentDir = 'R';
+            else if (currentDir != 'R')
+                DELAY /= 2;
+            currentDir = 'R';
         } else if (ch == KEY_LEFT) {
             if (currentDir == 'R')
                 inMotion = 0;
+            else if (currentDir != 'L')
+                DELAY /= 2;
             currentDir = 'L';
         } else if(ch == KEY_DOWN) {
             if (currentDir == 'U')
                 inMotion = 0;
+            else if (currentDir != 'D')
+                DELAY *= 2;
             currentDir = 'D';
         } else if(ch == KEY_UP) {
             if (currentDir == 'D')
                 inMotion = 0;
+            else if (currentDir != 'U')
+                DELAY *= 2;
             currentDir = 'U';
         }
 
-        //set nextX and nextY based on snakeBody[0]
+        //Author: Kenneth
+        //Initialize next snake head coordinates based on current head (aka snakeBody[0])
         nextX = snakeBody[0].xCoord;
         nextY = snakeBody[0].yCoord;
 
-        //increment/decrement coordinates
+        //Increment/decrement next head coordinates
         if(currentDir == 'R') nextX++;
         else if(currentDir == 'L') nextX--;
         else if(currentDir == 'U') nextY--;
         else if(currentDir == 'D') nextY++;
 
+        //Initialize temporary variable (temp) for new snake head
+        //Used snakeLength-1 to not overwrite any current coordinates in the array
         snakeBody[snakeLength - 1].xCoord = nextX;
         snakeBody[snakeLength - 1].yCoord = nextY;
-
         coordPair temp = snakeBody[snakeLength - 1];
-            for(int i = snakeLength - 1; i > 0; i--) {
+
+        //Increment everything in array and set temp to be new head
+        for(int i = snakeLength - 1; i > 0; i--) {
             snakeBody[i] = snakeBody[i-1];
         }
         snakeBody[0] = temp;
@@ -334,17 +366,18 @@ int main(int argc, char *argv[]) {
             startTimer();
         }
 
+        //Win game if snake length reaches half the perimeter
         if (snakeLength >= (COLS+LINES)) {
             winGame();
         }        
 
         //Author: Chase
-        //end game if the snake hits the edges
+        //End game if the snake hits the edges or itself
         if(wallColliding() || snakeColliding()) {
             inMotion = 0;
         }
 
-        //draw screen, snake
+        //Draw screen and snake
         draw();
        
     }   
