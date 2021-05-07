@@ -8,7 +8,7 @@
 #include <signal.h>
 #include <sys/time.h> // Needed for ITIMER_REAL
 
-int DELAY = 70000; // Set default speed of snake
+int DELAY;
 int maxY, maxX;
 int nextX, nextY; 
 int snakeLength = 5, inMotion = 1;
@@ -49,12 +49,11 @@ void startGame() {
     maxY = getmaxy(stdscr); 
     startTimer();
     snakeLength = 5;
-    DELAY = 70000;
 
     //Begin with snake moving random direction
     startDir();
     inMotion = 1;
-    
+
     //Author: Maryanne
     //Print snake pit border
     clear(); 
@@ -146,20 +145,25 @@ void winGame() {
     exitGame();
 }
 
-//Author: Chase
-//Determine random direction for game to start in
+//Author: Chase/Maryanne
+//Determine random direction for game to start in, set delay based on direction
 void startDir() {
     srand(time(NULL));
     int randDir = (rand() % 4);
+    DELAY = 70000;
 
     if (randDir == 0)
         currentDir = 'R';
     else if (randDir == 1)
         currentDir = 'L';
-    else if (randDir == 2)
+    else if (randDir == 2) {
         currentDir = 'U';
-    else
+        DELAY *= 2;
+    }
+    else {
         currentDir = 'D';
+        DELAY *= 2;
+    }
 }
 
 //Author: Chase
@@ -211,7 +215,7 @@ void growSnake() {
         snakeBody[i].xCoord = snakeBody[old_snakeLength -1].xCoord;
         snakeBody[i].yCoord = snakeBody[old_snakeLength -1].yCoord;
     }
-    //Increase speed proportional to length
+    //Decrease speed proportional to length
     DELAY = DELAY - (randValue * 300);
     if (DELAY < 5000)
         DELAY = 5000;
