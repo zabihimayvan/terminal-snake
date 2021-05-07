@@ -132,18 +132,21 @@ void exitGame() {
     }
 }
 
+//Author: Chase
 //Print message if user lost
 void loseGame() {
     mvprintw((maxY/2)-1, maxX/2, "GAME OVER");
     exitGame();
 }
 
+//Author: Chase
 //Print message if user won
 void winGame() {
     mvprintw((maxY/2)-1, maxX/2, "YOU WIN!");
     exitGame();
 }
 
+//Author: Chase
 //Determine random direction for game to start in
 void startDir() {
     srand(time(NULL));
@@ -261,6 +264,7 @@ void draw() {
     usleep(DELAY); 
 }
 
+//Author: Derek
 void countdown(int signum)
 {
     if (!trophy_gen_in_progress)
@@ -272,6 +276,7 @@ void countdown(int signum)
     startTimer();
 }
 
+//Author: Derek
 /*
  * arranges for interval timer to issue SIGALRMs at regular intervals
  * returns -1 on error, 0 for ok
@@ -366,6 +371,7 @@ int main(int argc, char *argv[]) {
             startTimer();
         }
 
+        //Author: Chase
         //Win game if snake length reaches half the perimeter
         if (snakeLength >= (COLS+LINES)) {
             winGame();
