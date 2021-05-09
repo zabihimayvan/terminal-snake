@@ -11,7 +11,8 @@
 int DELAY;
 int maxY, maxX;
 int nextX, nextY; 
-int snakeLength = 5, inMotion = 1;
+int snakeLength;
+int inMotion = 1;
 int randTimer, randValue, randX, randY;
 int highScore = 0;
 char currentDir;
@@ -48,7 +49,7 @@ void startGame() {
     maxX = getmaxx(stdscr);
     maxY = getmaxy(stdscr); 
     startTimer();
-    snakeLength = 5;
+    snakeLength = 3;
 
     //Begin with snake moving random direction
     startDir();
