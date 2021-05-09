@@ -1,4 +1,4 @@
-#include <bits/types/clock_t.h>
+// #include <bits/types/clock_t.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,7 +11,7 @@
 int DELAY;
 int maxY, maxX;
 int nextX, nextY; 
-int snakeLength;
+int snakeLength, maxLength;
 int inMotion = 1;
 int randTimer, randValue, randX, randY;
 int highScore = 0;
@@ -34,7 +34,7 @@ typedef struct coordPair {
 } coordPair;
 
 //Creates the snake as an array of coordinate pairs
-coordPair snakeBody[255] = {};
+coordPair *snakeBody;
 coordPair trophy;
 
 //Function to start the game
@@ -49,6 +49,10 @@ void startGame() {
     maxX = getmaxx(stdscr);
     maxY = getmaxy(stdscr); 
     startTimer();
+    
+    //Initialize snake
+    maxLength = maxX + maxY + 1;
+    snakeBody=malloc(maxLength * sizeof *snakeBody);
     snakeLength = 3;
 
     //Begin with snake moving random direction
@@ -392,4 +396,5 @@ int main(int argc, char *argv[]) {
         draw();
        
     }   
+    free(snakeBody);
 }
