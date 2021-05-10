@@ -1,7 +1,5 @@
-// #include <bits/types/clock_t.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <curses.h>
 #include <unistd.h>
 #include <time.h>
@@ -12,8 +10,8 @@ int DELAY;
 int maxY, maxX;
 int nextX, nextY; 
 int snakeLength, maxLength;
-int inMotion = 1;
 int randTimer, randValue, randX, randY;
+int inMotion = 1;
 int highScore = 0;
 char currentDir;
 void newTrophy();
@@ -33,8 +31,9 @@ typedef struct coordPair {
     int yCoord;
 } coordPair;
 
-//Creates the snake as an array of coordinate pairs
+//Pointer to array of coordinate pairs
 coordPair *snakeBody;
+//Declare trophy as a single coordinate pair
 coordPair trophy;
 
 //Function to start the game
@@ -396,5 +395,6 @@ int main(int argc, char *argv[]) {
         draw();
        
     }   
+    //De-allocate memory
     free(snakeBody);
 }
